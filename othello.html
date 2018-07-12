@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<style>
+    html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video, board, row, square {
+    display: block;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+    body {
+        width: 100%;
+        height: 100%;
+        background: lightgray;
+    }
+    board {
+        width: 700px;
+        height: 700px;
+        background: yellow;
+        margin: auto;
+        margin-top: 120px;
+    }
+    row {
+        display: flex;
+    }
+    square {
+        width: 86.5px;
+        height: 86.5px;
+        background: green;
+        border: 1px solid black;
+    }
+    .white {
+        background: white;
+    }
+    .black {
+        background: black;
+    }
+    .blackTurn::after {
+        content: "Black's Turn";
+        color: black;
+        position: relative;
+        top: 80px;
+        left: 47%;
+    }
+    .whiteTurn::after {
+        content: "White's Turn";
+        color: white;
+        position: relative;
+        top: 80px;
+        left: 47%;
+    }
+
+</style>
+
+<body id='body'>
+    <p id='turn'></p>
+</body>
+
+<script>
+    let body = document.getElementById('body')
+    let board = document.createElement('board')
+    let currentTurn
+    for (let i = 0; i < 8; i++) {
+        //Creates a 8 row elements with unique ids within the board element
+        let row = document.createElement('row')
+        row.setAttribute('id', 'r' + i)
+        for (let j = 0; j < 8; j++) {
+            //Creates a 8 square elements with unique ids and a clickHandler within each row element
+            let square = document.createElement('square')
+            square.addEventListener('click', squareClick)
+            square.setAttribute('id', 'r' + i + 's' + j)
+            row.appendChild(square)
+        }
+        board.appendChild(row)
+    }
+    
+
+    function squareClick(e) {
+        let square = document.getElementById(e.toElement.id)
+        let turn = document.getElementById('turn')
+        if(currentTurn === 'black') {
+            square.setAttribute('class', 'black')
+            currentTurn = 'white'
+            turn.setAttribute('class', 'whiteTurn')
+        } else {
+            square.setAttribute('class', 'white')
+            currentTurn = 'black'
+            turn.setAttribute('class', 'blackTurn')
+        }
+    }
+    body.onload = function () {
+        currentTurn = 'black'
+        let firstTurn = document.getElementById('turn')
+        firstTurn.setAttribute('class', 'blackTurn')
+        let startingArray = ['r3s3', 'r4s4', 'r4s3', 'r3s4']
+            startingArray.forEach((id, i) => {
+                let startColor = document.getElementById(id)
+                if(i < 2) startColor.setAttribute('class','black')
+                else startColor.setAttribute('class','white')
+            })
+    }
+    body.appendChild(board)
+
+</script>
+
+</html>
