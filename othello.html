@@ -9,7 +9,7 @@
 </head>
 
 <style>
-    html, body, div, span, applet, object, iframe,
+html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code,
 del, dfn, em, img, ins, kbd, q, s, samp,
@@ -38,7 +38,7 @@ time, mark, audio, video, board, row, square {
     board {
         width: 700px;
         height: 700px;
-        background: yellow;
+        background: green;
         margin: auto;
         margin-top: 120px;
     }
@@ -56,6 +56,9 @@ time, mark, audio, video, board, row, square {
     }
     .black {
         background: black;
+    }
+    .validMove {
+        background: rgb(236, 152, 152);
     }
     .blackTurn::after {
         content: "Black's Turn";
@@ -81,12 +84,15 @@ time, mark, audio, video, board, row, square {
 <script>
     let body = document.getElementById('body')
     let board = document.createElement('board')
+    let boardArray = []
     let currentTurn
     for (let i = 0; i < 8; i++) {
+        boardArray.push([])
         //Creates a 8 row elements with unique ids within the board element
         let row = document.createElement('row')
         row.setAttribute('id', 'r' + i)
         for (let j = 0; j < 8; j++) {
+            boardArray[i].push(null)
             //Creates a 8 square elements with unique ids and a clickHandler within each row element
             let square = document.createElement('square')
             square.addEventListener('click', squareClick)
@@ -95,7 +101,11 @@ time, mark, audio, video, board, row, square {
         }
         board.appendChild(row)
     }
-    
+    boardArray[3][3] = 'b'
+    boardArray[3][4] = 'w'
+    boardArray[4][4] = 'b'
+    boardArray[4][3] = 'w'
+    console.log(boardArray)
 
     function squareClick(e) {
         let square = document.getElementById(e.toElement.id)
@@ -109,7 +119,91 @@ time, mark, audio, video, board, row, square {
             currentTurn = 'black'
             turn.setAttribute('class', 'blackTurn')
         }
+        availableMoves()
     }
+
+    function availableMoves() {
+        //boardArray
+        //currentTurn
+        if (currentTurn === 'black') {
+            boardArray.forEach((row, rowI) => row.forEach((square, sqrI) => square === 'b' ? checkDirections(rowI, sqrI) : null))
+        } else {
+            boardArray.forEach((row, rowI) => row.forEach((square, sqrI) => square === 'w' ? checkDirections(rowI, sqrI) : null))
+        }
+    }
+
+    function checkDirections(rowI, sqrI) {
+        if (currentTurn === 'black') {
+            findBlackMove('up', rowI, sqrI)
+            findBlackMove('upright', rowI, sqrI)
+            findBlackMove('right', rowI, sqrI)
+        } else {
+            findWhiteMove('up', rowI, sqrI)
+            findWhiteMove('upright', rowI, sqrI)
+            findWhiteMove('right', rowI, sqrI)
+        }
+        
+        //do all directions
+    }
+
+    function findBlackMove(direction, rowI, sqrI) {
+        switch (direction) {
+            case 'up':
+                console.log(rowI, sqrI)
+                if (rowI > 1) {
+                    let previousSqr = 'b'
+                    for (let i = rowI - 1; i >= 0; i--) {
+                        if (boardArray[i][sqrI] === 'w') previousSqr = 'w'
+                        if (boardArray[i][sqrI] === 'b') break;
+                        if (boardArray[i][sqrI] === null && previousSqr === 'b') break;
+                        if (boardArray[i][sqrI] === null && previousSqr === 'w') {
+                            let square = document.getElementById('r' + i + 's' + sqrI)
+                            square.setAttribute('class','validMove')
+                            boardArray[i][sqrI] // set ValidMove class
+                            //push to array of valid moves to disable all other moves.
+                            //Squares should have by default a disabled attribute, but we will undisable it here.
+                            break;
+                        }
+                    }
+                }
+                break;
+            case 'upright':
+                return true
+                break;
+            case 'right':
+                if (sqrI < 6) {
+                    let previousSqr = 'b'
+                    for (let i = sqrI + 1; i < 8; i++) {
+                        if (boardArray[rowI][i] === 'w') previousSqr = 'w'
+                        if (boardArray[rowI][i] === 'b') break;
+                        if (boardArray[rowI][i] === null && previousSqr === 'b') break;
+                        if (boardArray[rowI][i] === null && previousSqr === 'w') {
+                            let square = document.getElementById('r' + rowI + 's' + i)
+                            square.setAttribute('class','validMove')
+                            boardArray[i][sqrI] // set ValidMove class
+                            break;
+                        }
+                    }
+                }
+        }
+    }
+
+    function findWhiteMove(direction, rowI, sqrI) {
+        switch (direction) {
+            case 'up':
+                console.log(rowI, sqrI, currentTurn)
+
+                break;
+            case 'upright':
+                return true
+                break;
+            case 'right':
+                return true
+                break;
+        }
+    }
+
+
     body.onload = function () {
         currentTurn = 'black'
         let firstTurn = document.getElementById('turn')
@@ -120,6 +214,7 @@ time, mark, audio, video, board, row, square {
                 if(i < 2) startColor.setAttribute('class','black')
                 else startColor.setAttribute('class','white')
             })
+        availableMoves()
     }
     body.appendChild(board)
 
